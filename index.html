@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900& display=swap"
+      rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <title>Notes</title>
+  </head>
+  <body>
+    <header class="main-header">
+      <div class="container">
+        <div class="header-wrapper">
+          <a href="#" class="logo">
+            <img src="images/📝Notes.svg" alt="logo" class="logo-img">
+          </a>
+          <p class="notes-quantity">
+            Всего заметок:
+            <span class="notes-count">5</span>
+          </p>
+        </div>
+      </div>
+    </header>
+    <main class="main">
+      <form action="" class="form">
+        <div class="form-left">
+          <div class="form-note">
+            <label for="note" class="note-text-label">Название заметки</label>
+            <input
+              type="text"
+              id="note"
+              class="note-text"
+              placeholder="Напишите название новой заметки..."
+            />
+          </div>
+          <div class="form-description">
+            <label for="description" class="note-description-label">
+              Описание новой заметки
+            </label>
+            <textarea
+              rows="3"
+              name="description"
+              id="description"
+              class="note-description"
+              placeholder="Напишите описание новой заметки..."
+            ></textarea>
+          </div>
+        </div>
+        <div class="form-right">
+          <div class="form-color-list">
+            <p class="list-label">Выберите цвет заметки</p>
+            <ul class="note-color-list">
+              <li class="list-item checked">
+                <button class="circle yellow"></button>
+              </li>
+              <li class="list-item">
+                <button class="circle green"></button>
+              </li>
+              <li class="list-item">
+                <button class="circle blue"></button>
+              </li>
+              <li class="list-item">
+                <button class="circle red"></button>
+              </li>
+              <li class="list-item">
+                <button class="circle purple"></button>
+              </li>
+            </ul>
+          </div>
+          <button type="submit" class="submit-btn">Добавить заметку</button>
+        </div>
+      </form>
+
+      <section class="notes">
+        <div class="favorites-block">
+          <input id="favorites" type="checkbox" class="custom-checkbox">
+          <label for="favorites" class="favorites"
+            >Показать только избранные заметки
+          </label>
+        </div>
+        <div class="no-message-block">
+          <p class="no-notes-message">
+            У вас нет еще ни одной заметки<br />
+            Заполните поля выше и создайте свою первую заметку!
+          </p>
+        </div>
+
+        <ul class="notes-list">
+          <li class="notes-list-item">
+            <div class="note-header">
+              <p class="note-header-text">Flexbox (CSS)</p>
+              <div class="note-btns">
+                <button type="button" class="favorite-button btn"></button>
+                <button type="button" class="delete-button btn"></button>
+              </div>
+            </div>
+            <div class="card-text-block">
+              <p class="card-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat.
+              </p>
+            </div>
+          </li>
+        </ul>
+      </section>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
