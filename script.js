@@ -20,15 +20,19 @@ const view = {
       const input = form.querySelector('.note-text');
       const textarea = form.querySelector('.note-description');
 
-      form.addEventListener('submit', (event) => {
+      form.addEventListener('click', (event) => {
         event.preventDefault();
-        const title = form.querySelector('.note-text').value;
-        const text = form.querySelector('.note-description').value;
-        controller.addNote(title, text);
-
-        input.value = '';
-        textarea.value = '';
+        if(event.target.classList.contains('submit-btn')) {
+          const title = form.querySelector('.note-text').value;
+          const text = form.querySelector('.note-description').value;
+          controller.addNote(title, text, input, textarea);
+        }
       })
+    },
+
+    clearInputs(input, textarea) {
+      input.value = '';
+      textarea.value = '';
     },
 
     renderTasks(tasks) {
@@ -58,12 +62,36 @@ const view = {
       }
       list.innerHTML = tasksHtml;
     },
+
+    displayMessage(message, isError = false) {
+      const messageBox = document.querySelector('.display-message');
+      messageBox.textContent = message;
+      if(isError) {
+        messageBox.classList.remove('display-message-done');
+        messageBox.classList.add('display-message-error')
+      } else {
+        messageBox.classList.remove('display-message-error');
+        messageBox.classList.add('display-message-done');
+      }
+
+      messageBox.style.display = 'block';
+
+      setTimeout(() => {
+        messageBox.style.display = 'none';
+      }, 3000)
+    },
 };
 
 const controller = {
-    addNote(title, text) {
-      if(title, text) {
+    addNote(title, text, input, textarea) {
+      if(title.length > 10) {
+        view.displayMessage('Максимальная длина заголовка - 50 символов', true)
+      } else if(title.trim() !== '' && text.trim() !== '') {
+        view.clearInputs(input, textarea);
+        view.displayMessage('Заметка добавлена!')
         model.addNote(title, text);
+      } else {
+        view.displayMessage('Заполните все поля', true)
       }
     },
 };

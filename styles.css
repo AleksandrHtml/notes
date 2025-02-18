@@ -278,14 +278,21 @@ textarea::placeholder {
 .note-header {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   padding: 12px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
   background-color: #f3db7d;
 }
 
+.notes-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .notes-list-item {
   max-width: 368px;
+  width: 100%;
   box-shadow: 0 4px 8px 0 rgba(11, 12, 13, 0.08),
     0 8px 16px 0 rgba(11, 12, 13, 0.04), 0 1px 2px 0 rgba(11, 12, 13, 0.08);
     border-radius: 10px;
@@ -323,4 +330,39 @@ textarea::placeholder {
 
 .card-text-block {
   padding: 12px;
+}
+
+.card-text {
+  overflow-wrap: break-word;
+}
+
+.display-message {
+  display: none;
+  position: absolute;
+  right: 193px;
+  bottom: 72px;
+  align-self: flex-end;
+  border-radius: 10px;
+  padding: 12px 24px;
+  padding-left: 58px;
+  box-shadow: 0 8px 12px 0 rgba(11, 12, 13, 0.08),
+   0 16px 24px 0 rgba(11, 12, 13, 0.04),
+   0 1px 2px 0 rgba(11, 12, 13, 0.08);
+  background-repeat: no-repeat;
+  background-position: 24px;
+}
+
+.display-message-done {
+  background-color: #47b27d;
+  background-image: url(images/Done.svg);
+}
+
+.display-message-error {
+  background-color: #f23d5b;
+  background-image: url(images/warning.svg);
+}
+
+.display-text {
+  font-weight: 500;
+  color: #fff;
 }
