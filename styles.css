@@ -282,7 +282,6 @@ textarea::placeholder {
   padding: 12px;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
-  background-color: #f3db7d;
 }
 
 .notes-list {

@@ -3,13 +3,18 @@ const model = {
 
     ],
 
+    backgroundColor: 'yellow',
+
     addNote(title, text) {
       const id = new Date().getTime();
-
-      const newNote = {id: id, title: title, text: text};
+      const newNote = {id: id, title: title, text: text, color: this.backgroundColor};
       this.tasks.push(newNote);
       view.renderTasks(model.tasks);
     },
+
+    setColor(color) {
+      this.backgroundColor = color;
+    }
 };
 
 const view = {
@@ -28,6 +33,18 @@ const view = {
           controller.addNote(title, text, input, textarea);
         }
       })
+
+      const colorList = document.querySelector('.note-color-list');
+
+      colorList.addEventListener('click', (event) => {
+        event.preventDefault();
+        if(event.target.tagName === "BUTTON") {
+          document.querySelectorAll('.list-item').forEach(item => item.classList.remove('checked'));
+          event.target.parentElement.classList.add('checked');
+        }
+        const color = event.target.dataset.color;
+        controller.addColor(color);
+      })
     },
 
     clearInputs(input, textarea) {
@@ -45,7 +62,7 @@ const view = {
 
         tasksHtml += `
         <li id='${task.id}' class="notes-list-item">
-            <div class="note-header">
+            <div class="note-header ${task.color}">
               <p class="note-header-text">${task.title}</p>
               <div class="note-btns">
                 <button type="button" class="favorite-button btn"></button>
@@ -93,6 +110,10 @@ const controller = {
       } else {
         view.displayMessage('Заполните все поля', true)
       }
+    },
+
+    addColor(color) {
+      model.setColor(color)
     },
 };
 
