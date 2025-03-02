@@ -7,19 +7,36 @@ const model = {
 
     addNote(title, text) {
       const id = new Date().getTime();
-      const newNote = {id: id, title: title, text: text, color: this.backgroundColor};
-      this.tasks.push(newNote);
-      view.renderTasks(model.tasks);
+      const newNote = {id: id, title: title, text: text, color: this.backgroundColor, favorite: false};
+      this.tasks.unshift(newNote);
+      console.log(this.tasks)
+    },
+
+    toggleFavorite(id) {
+      const note = this.tasks.find(note => note.id === id);
+      if (note) {
+          note.favorite = !note.favorite; // Toggle favorite status
+      }
+    },
+
+    getFavoriteNotes() {
+      return this.tasks.filter(note => note.favorite);
+    },
+
+    deleteNote(id) {
+      this.tasks = this.tasks.filter(note => note.id !== id);
     },
 
     setColor(color) {
       this.backgroundColor = color;
-    }
+    },
+
 };
 
 const view = {
     init() {
       this.renderTasks(model.tasks);
+      controller.displayCountNotes(); //to ensure about notes count 0 on init
 
       const form = document.querySelector('.form');
       const input = form.querySelector('.note-text');
@@ -45,6 +62,32 @@ const view = {
         const color = event.target.dataset.color;
         controller.addColor(color);
       })
+
+      const notesList = document.querySelector('.notes-list');
+
+      notesList.addEventListener('click', (event) => {
+        if(event.target.classList.contains('delete-button')) {
+          const noteId = Number(event.target.closest('.notes-list-item').id);
+          controller.deleteNote(noteId);
+        }
+
+        if(event.target.classList.contains('favorite-button')) {
+          const noteId = Number(event.target.closest('.notes-list-item').id);
+          controller.toggleFavorite(noteId);
+        }
+      })
+
+      const favCheckbox = document.querySelector('#favorites');
+
+      favCheckbox.addEventListener('change', (event) => {
+        controller.toggleFavoritesFilter();;
+      });
+
+    },
+
+    displayCountNotes(count) {
+      const notesCount = document.querySelector('.notes-count');
+      notesCount.textContent = count;
     },
 
     clearInputs(input, textarea) {
@@ -54,6 +97,7 @@ const view = {
 
     renderTasks(tasks) {
       const list = document.querySelector('.notes-list');
+      const noMessageBlock = document.querySelector('.no-message-block');
 
       let tasksHtml = '';
 
@@ -61,11 +105,11 @@ const view = {
         const task = tasks[i];
 
         tasksHtml += `
-        <li id='${task.id}' class="notes-list-item">
+         <li id='${task.id}' class="notes-list-item">
             <div class="note-header ${task.color}">
               <p class="note-header-text">${task.title}</p>
               <div class="note-btns">
-                <button type="button" class="favorite-button btn"></button>
+                <button type="button" class="favorite-button btn ${task.favorite ? 'active' : 'inactive'}"></button>
                 <button type="button" class="delete-button btn"></button>
               </div>
             </div>
@@ -78,6 +122,12 @@ const view = {
           `;
       }
       list.innerHTML = tasksHtml;
+
+      if(tasks.length > 0) {//toggle the default message about no notes
+        noMessageBlock.style.display = 'none';
+      } else {
+        noMessageBlock.style.display = 'block';
+      }
     },
 
     displayMessage(message, isError = false) {
@@ -100,20 +150,50 @@ const view = {
 };
 
 const controller = {
+    showFavorites: false,  // Track if favorites checkbox is checked
+
     addNote(title, text, input, textarea) {
-      if(title.length > 10) {
+      if(title.length > 50) {
         view.displayMessage('Максимальная длина заголовка - 50 символов', true)
       } else if(title.trim() !== '' && text.trim() !== '') {
         view.clearInputs(input, textarea);
         view.displayMessage('Заметка добавлена!')
         model.addNote(title, text);
+        this.filterFavorites();
       } else {
         view.displayMessage('Заполните все поля', true)
       }
     },
 
+    toggleFavoritesFilter() {
+      this.showFavorites = !this.showFavorites; // Toggle the filter state
+      this.filterFavorites();  // Apply the filter after the state change
+    },
+
+    filterFavorites() {
+      const tasks = this.showFavorites ? model.getFavoriteNotes() : model.tasks;
+      view.renderTasks(tasks);
+      this.displayCountNotes();
+    },
+
+    toggleFavorite(noteId) {
+      model.toggleFavorite(noteId);  // Toggle the favorite status in the model
+      this.filterFavorites();  // Re-render with the correct favorite filter
+    },
+
     addColor(color) {
       model.setColor(color)
+    },
+
+    displayCountNotes() {
+      let count = model.tasks.length;
+      view.displayCountNotes(count);
+    },
+
+    deleteNote(id) {
+      model.deleteNote(id);
+      this.filterFavorites();
+      view.displayMessage('Заметка удалена', true);
     },
 };
 
