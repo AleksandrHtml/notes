@@ -9,7 +9,6 @@ const model = {
       const id = new Date().getTime();
       const newNote = {id: id, title: title, text: text, color: this.backgroundColor, favorite: false};
       this.tasks.unshift(newNote);
-      console.log(this.tasks)
     },
 
     toggleFavorite(id) {
@@ -48,6 +47,8 @@ const view = {
           const title = form.querySelector('.note-text').value;
           const text = form.querySelector('.note-description').value;
           controller.addNote(title, text, input, textarea);
+          this.clearCheckedColors();
+          document.querySelector('.list-item').classList.add('checked');
         }
       })
 
@@ -56,11 +57,11 @@ const view = {
       colorList.addEventListener('click', (event) => {
         event.preventDefault();
         if(event.target.tagName === "BUTTON") {
-          document.querySelectorAll('.list-item').forEach(item => item.classList.remove('checked'));
+          this.clearCheckedColors();
           event.target.parentElement.classList.add('checked');
+          const color = event.target.dataset.color;
+          controller.addColor(color);
         }
-        const color = event.target.dataset.color;
-        controller.addColor(color);
       })
 
       const notesList = document.querySelector('.notes-list');
@@ -85,6 +86,10 @@ const view = {
 
     },
 
+    clearCheckedColors() {
+      document.querySelectorAll('.list-item').forEach(item => item.classList.remove('checked'));
+    },
+
     displayCountNotes(count) {
       const notesCount = document.querySelector('.notes-count');
       notesCount.textContent = count;
@@ -95,9 +100,10 @@ const view = {
       textarea.value = '';
     },
 
-    renderTasks(tasks) {
+    renderTasks(tasks, isFavoriteFilter = false) {
       const list = document.querySelector('.notes-list');
       const noMessageBlock = document.querySelector('.no-message-block');
+      const noMessageText = noMessageBlock.querySelector('.no-notes-message');
 
       let tasksHtml = '';
 
@@ -123,16 +129,21 @@ const view = {
       }
       list.innerHTML = tasksHtml;
 
-      if(tasks.length > 0) {//toggle the default message about no notes
+      if(tasks.length > 0) {
         noMessageBlock.style.display = 'none';
       } else {
         noMessageBlock.style.display = 'block';
+        noMessageText.innerHTML = isFavoriteFilter ? `У вас нет ни одной избранной заметки` :
+         `У вас нет еще ни одной заметки<br>
+          Заполните поля выше и создайте свою первую заметку`;
       }
     },
 
     displayMessage(message, isError = false) {
       const messageBox = document.querySelector('.display-message');
-      messageBox.textContent = message;
+      const displayMessage = document.querySelector('.display-text');
+
+      displayMessage.textContent = message;
       if(isError) {
         messageBox.classList.remove('display-message-done');
         messageBox.classList.add('display-message-error')
@@ -143,9 +154,16 @@ const view = {
 
       messageBox.style.display = 'block';
 
-      setTimeout(() => {
+      if(messageBox.dataset.timeoutId) {
+        clearTimeout(messageBox.dataset.timeoutId);
+      }
+
+      const timeoutId = setTimeout(() => {
         messageBox.style.display = 'none';
-      }, 3000)
+        delete messageBox.dataset.timeoutId;
+      }, 3000);
+
+      messageBox.dataset.timeoutId = timeoutId;
     },
 };
 
@@ -154,14 +172,17 @@ const controller = {
 
     addNote(title, text, input, textarea) {
       if(title.length > 50) {
-        view.displayMessage('Максимальная длина заголовка - 50 символов', true)
+        view.displayMessage('Максимальная длина заголовка - 50 символов', true);
+        this.addColor('yellow');
       } else if(title.trim() !== '' && text.trim() !== '') {
         view.clearInputs(input, textarea);
         view.displayMessage('Заметка добавлена!')
         model.addNote(title, text);
         this.filterFavorites();
+        this.addColor('yellow');
       } else {
-        view.displayMessage('Заполните все поля', true)
+        view.displayMessage('Заполните все поля', true);
+        this.addColor('yellow');
       }
     },
 
@@ -172,7 +193,7 @@ const controller = {
 
     filterFavorites() {
       const tasks = this.showFavorites ? model.getFavoriteNotes() : model.tasks;
-      view.renderTasks(tasks);
+      view.renderTasks(tasks, this.showFavorites);
       this.displayCountNotes();
     },
 
